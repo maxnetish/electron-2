@@ -61,7 +61,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         cwd: 'src/',
-                        src: ['**'],
+                        src: ['**', '!**/*.less', '!**/*.jsx'],
                         dest: buildDir + '/'
                     }
                 ]
@@ -121,9 +121,23 @@ module.exports = function (grunt) {
                     derefSymlinks: true
                 }
             }
+        },
+
+        less: {
+            build: {
+                files: [{
+                    src: 'src/**/*.less',
+                    dest: buildDir + '/app.css'
+                }],
+                options: {
+                    plugins: [
+                        new (require('less-plugin-npm-import'))
+                    ]
+                }
+            }
         }
     });
 
-    grunt.registerTask('build', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx']);
-    grunt.registerTask('package', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx', 'electron:win']);
+    grunt.registerTask('build', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx', 'less:build']);
+    grunt.registerTask('package', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx', 'less:build', 'electron:win']);
 };
