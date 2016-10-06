@@ -56,15 +56,24 @@ module.exports = function (grunt) {
             //         dest: publicImg + '/'
             //     }]
             // },
-            src2build: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'src/',
-                        src: ['**', '!**/*.less', '!**/*.jsx'],
-                        dest: buildDir + '/'
-                    }
-                ]
+            // src2Build: {
+            //     files: [
+            //         {
+            //             expand: true,
+            //             cwd: 'src/',
+            //             src: ['**', '!**/*.less', '!**/*.jsx'],
+            //             dest: buildDir + '/'
+            //         }
+            //     ]
+            // },
+            index2Build: {
+                files: [{
+                    expand: false,
+                    filter: 'isFile',
+                    flatten: false,
+                    src: 'src/index.html',
+                    dest: buildDir + '/index.html'
+                }]
             },
             package2Build: {
                 files: [{
@@ -78,10 +87,10 @@ module.exports = function (grunt) {
         },
 
         babel: {
-            'transform-jsx': {
+            'transform-jsx-es6': {
                 options: {
                     sourceMap: true,
-                    plugins: ['transform-react-jsx'],
+                    presets: ['es2015', 'react'],
                     // auxiliaryCommentBefore: 'Babel jsx transform:',
                     // auxiliaryCommentAfter: 'end of jsx transform',
                     ast: false
@@ -90,9 +99,8 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         filter: 'isFile',
-
                         cwd: 'src/',
-                        src: ['**/*.jsx'],
+                        src: ['**/*.js*'],
                         dest: buildDir + '/'
                     }
                 ]
@@ -103,9 +111,9 @@ module.exports = function (grunt) {
             win: {
                 options: {
                     arch: 'x64',
-                    dir: './build',
+                    dir: './' + buildDir,
                     platform: 'win32',
-                    asar: true,
+                    asar: false,
                     ignore: [
                         'packager.js',
                         '.idea',
@@ -124,12 +132,26 @@ module.exports = function (grunt) {
         },
 
         less: {
+            buildDebug: {
+                files: [{
+                    src: 'src/**/*.less',
+                    dest: buildDir + '/app.css'
+                }],
+                options: {
+                    sourceMap: true,
+                    outputSourceFiles: true,
+                    plugins: [
+                        new (require('less-plugin-npm-import'))
+                    ]
+                }
+            },
             build: {
                 files: [{
                     src: 'src/**/*.less',
                     dest: buildDir + '/app.css'
                 }],
                 options: {
+                    sourceMap: false,
                     plugins: [
                         new (require('less-plugin-npm-import'))
                     ]
@@ -138,6 +160,6 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('build', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx', 'less:build']);
-    grunt.registerTask('package', ['clean', 'symlink:node_modules', 'copy:src2build', 'copy:package2Build', 'babel:transform-jsx', 'less:build', 'electron:win']);
+    grunt.registerTask('build', ['clean', 'symlink:node_modules', 'copy:index2Build', 'copy:package2Build', 'babel:transform-jsx-es6', 'less:buildDebug']);
+    grunt.registerTask('package', ['clean', 'symlink:node_modules', 'copy:index2Build', 'copy:package2Build', 'babel:transform-jsx-es6', 'less:build', 'electron:win']);
 };

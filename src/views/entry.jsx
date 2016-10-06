@@ -1,28 +1,18 @@
-(function (document) {
-    var React = require('react');
-    var ReactDOM = require('react-dom');
-    var entryNode = document.getElementById('react-entry-point');
+import React                from 'react';
+import ReactDom             from 'react-dom';
+import MainWindowComponent  from './views/main-window.jsx';
 
-    ReactDOM.render(
-        <div className="container-fluid">
-            <h3>Hello, world of react & electron!</h3>
-            <div className="row">
-                <div className="col-xs-2 text-right">Node</div>
-                <div className="col-xs-2">{process.versions.node}</div>
-            </div>
-            <div className="row">
-                <div className="col-xs-2 text-right">Chrome</div>
-                <div className="col-xs-2">{process.versions.chrome}</div>
-            </div>
-            <div className="row">
-                <div className="col-xs-2 text-right">Electron</div>
-                <div className="col-xs-2">{process.versions.electron}</div>
-            </div>
-            <div className="row">
-                <div className="col-xs-2 text-right">React</div>
-                <div className="col-xs-2">{React.version}</div>
-            </div>
-        </div>,
-        entryNode
-    );
-})(document);
+/**
+ *
+ * There is strange behavior of electron's require implementation
+ * Relative module path should be relative on builded application
+ * or should be in node_modules.
+ */
+
+var entryNode = document.getElementById('react-entry-point');
+
+ReactDom.render(
+    <MainWindowComponent/>,
+    entryNode
+);
+
